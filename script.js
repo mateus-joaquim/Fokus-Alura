@@ -6,19 +6,25 @@ const titulo = document.querySelector('.app__title');
 const musicaFocoInput = document.querySelector('#alternar-musica');
 const musica = new Audio('/sons/luna-rise-part-one.mp3')
 musica.loop = true;
+const audioPlay = new Audio('/sons/play.wav')
+const audioPause = new Audio('/sons/pause.mp3')
+const audioFimDaContagem = new Audio('/sons/beep.mp3')
 
 //Botões
 const focoBt = document.querySelector('.app__card-button--foco');
 const curtoBt = document.querySelector('.app__card-button--curto');
 const longoBt = document.querySelector('.app__card-button--longo');
 const inicioBt = document.querySelector('.app__card-primary-button');
+const startPauseBt = document.querySelector('#start-pause');
 const botoes = document.querySelectorAll('.app__card-button');
 
 
 //Tempo dos temporizadores
-const duracaoFoco = 1500;
-const duracaoDescansoCurto = 300;
-const duracaoDescansoLongo = 900;
+let intervaloId = null
+
+let duracaoFoco = 1500;
+let duracaoDescansoCurto = 300;
+let duracaoDescansoLongo = 900;
 
 focoBt.addEventListener('click', () => {
     alterarContexto('foco');
@@ -71,4 +77,32 @@ function alterarContexto(contexto) {
         default:
             break;
     }
+}
+
+const contagemRegressiva = () => {
+    if (duracaoFoco <=0) {
+        audioFimDaContagem.play()
+        zerar()
+        alert('Tempo finalizado!')
+        return
+    }
+    duracaoFoco -= 1;
+    console.log('Temporizador: ' + duracaoFoco)
+}
+
+startPauseBt.addEventListener('click', iniciar)
+
+function iniciar() {
+    audioPlay.play()
+    if (intervaloId) {
+        audioPause.play()
+        zerar()
+        return
+    }
+    intervaloId = setInterval(contagemRegressiva, 1000)
+}
+
+function zerar() {
+    clearInterval(intervaloId)
+    intervaloId = null
 }
